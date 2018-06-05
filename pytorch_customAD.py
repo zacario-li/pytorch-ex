@@ -4,7 +4,7 @@ class MyReLU(torch.autograd.Function):
     @staticmethod
     def forward(ctx,input):
         ctx.save_for_backward(input)
-        return input.clamp(min=0)
+        return input.clamp(min=0) #clamp 这里效果为，小于0的值，都设置为0，模拟relu的效果
 
     @staticmethod
     def backward(ctx,grad_output):
@@ -24,10 +24,10 @@ w1 = torch.randn(D_in,H,device=device,dtype=dtype,requires_grad=True)
 w2 = torch.randn(H,D_out,device=device,dtype=dtype,requires_grad=True)
 
 learning_rete = 1e-6
-for t in range(50000):
+for t in range(500):
     relu = MyReLU.apply
 
-    y_pred = relu(x.mm(w1).mm(w2))
+    y_pred = relu(x.mm(w1)).mm(w2)
     loss = (y_pred - y).pow(2).sum()
     print(t,loss.item())
     loss.backward()
@@ -35,6 +35,6 @@ for t in range(50000):
     with torch.no_grad():
         w1 -= learning_rete * w1.grad
         w2 -= learning_rete * w2.grad
-
+#务必清空上一次计算的梯度，否则下次计算会得不到结果
         w1.grad.zero_()
         w2.grad.zero_()

@@ -19,6 +19,6 @@ for t in range(50000):
     model.zero_grad()
     loss.backward()
 
-    with torch.no_grad():
+    with torch.no_grad():#这是非常底层的更新parameters的方法，实际项目中，我们直接使用已有的优化器，不需要自己写梯度过程
         for param in model.parameters():
             param -= learning_rate * param.grad
